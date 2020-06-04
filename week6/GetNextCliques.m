@@ -29,9 +29,25 @@ function [i, j] = GetNextCliques(P, messages)
 % you should set them to the correct values in your code
 i = 0;
 j = 0;
-
+N = length(messages);
+message_exist = zeros(N,N);
+for m = 1:N
+    for n = 1:N
+        message_exist(m,n) = ~isempty(messages(m,n).var);
+    end
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
+for m = 1:N
+    neighbors = find(P.edges(m,:)==1);
+    for n = 1:length(neighbors)
+        if (~message_exist(m,neighbors(n))&&all(message_exist(setdiff(neighbors,neighbors(n)), m)))
+            i = m;
+            j = neighbors(n);
+            return
+        end
+    end
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

@@ -33,17 +33,23 @@ if (isempty(A.var) || isempty(V)), B = A; return; end;
 % Check for empty resultant factor
 if isempty(B.var)
   error('Error: Resultant factor has empty scope');
-end;
+end
 
 % initialization
 % you should set them to the correct values in your code
-B.card = [];
-B.val = [];
-
+B.card = A.card(mapB);
+B.val = zeros(1,prod(B.card));
+%  important
+B.val(:) = -inf;
+assignments = IndexToAssignment(1:length(A.val), A.card);
+indxB = AssignmentToIndex(assignments(:, mapB), B.card);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
 % Correctly set up and populate the factor values of B
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+for i = 1:length(A.val)
+    B.val(indxB(i)) = max(B.val(indxB(i)), A.val(i));
+    %B.val(indxB(i))
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end

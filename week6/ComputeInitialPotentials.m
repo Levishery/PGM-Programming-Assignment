@@ -25,7 +25,7 @@ N = length(C.nodes);
 
 % initialize cluster potentials 
 P.cliqueList = repmat(struct('var', [], 'card', [], 'val', []), N, 1);
-P.edges = zeros(N);
+P.edges = C.edges;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
@@ -38,6 +38,30 @@ P.edges = zeros(N);
 % So in your code, you should start with: P.cliqueList(i).var = C.nodes{i};
 % Print out C to get a better understanding of its structure.
 %
+
+
+k = length(C.factorList);
+assignment = [];
+for i = 1:k
+    vars = C.factorList(i).var;
+    for j = 1:N
+        if(all(ismember(vars, C.nodes{j})))
+            assignment = [assignment j];
+            break
+        end
+    end
+end
+for i = 1:N
+    map = find(i == assignment );
+    if isempty(map)
+        continue
+    end
+    factor = C.factorList(map(1));
+    for j = 2:length(map)
+        factor =  FactorProduct(factor,  C.factorList(map(j)));
+    end
+    P.cliqueList(i) = factor;
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

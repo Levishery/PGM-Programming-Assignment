@@ -19,6 +19,12 @@ N = length(P.cliqueList);
 % MESSAGES(i,j) represents the message going from clique i to clique j. 
 MESSAGES = repmat(struct('var', [], 'card', [], 'val', []), N, N);
 
+% log transform
+if isMax
+    for i = 1:N
+        P.cliqueList(i).val = log(P.cliqueList(i).val);
+    end
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % We have split the coding part for this function in two chunks with
@@ -36,13 +42,48 @@ MESSAGES = repmat(struct('var', [], 'card', [], 'val', []), N, N);
 % Remember that you only need an upward pass and a downward pass.
 %
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+[i,j] = GetNextCliques(P,MESSAGES);
+while(~i==0)
+    neighbor_in = setdiff(find(P.edges(i,:)==1),j);
+    message_in = MESSAGES(i,i);
+    for n = 1:length(neighbor_in)
+        if ~isMax
+            message_in = FactorProduct(message_in, MESSAGES(neighbor_in(n),i));
+        else
+            message_in = FactorSum(message_in, MESSAGES(neighbor_in(n),i));
+        end
+    end
+    if ~isMax
+        MESSAGES(i,j) = FactorProduct(message_in, P.cliqueList(i));    
+    else
+        MESSAGES(i,j) = FactorSum(message_in, P.cliqueList(i));
+    end
+    eliminate = setdiff(P.cliqueList(i).var, P.cliqueList(j).var);
+    % max or sum
+    if ~isMax
+        MESSAGES(i,j) = FactorMarginalization(MESSAGES(i,j), eliminate);
+        MESSAGES(i,j).val = MESSAGES(i,j).val./sum(MESSAGES(i,j).val);
+    else
+        MESSAGES(i,j) = FactorMaxMarginalization(MESSAGES(i,j), eliminate);
+    end
+    [i,j] = GetNextCliques(P,MESSAGES);
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
 %
 % Now the clique tree has been calibrated. 
 % Compute the final potentials for the cliques and place them in P.
+for i = 1:N
+    neighbors = find(P.edges(i,:)==1);
+    for n = 1:length(neighbors)
+        if ~isMax
+            P.cliqueList(i) = FactorProduct(P.cliqueList(i), MESSAGES(neighbors(n),i));
+        else
+            P.cliqueList(i) = FactorSum(P.cliqueList(i), MESSAGES(neighbors(n),i));
+        end
+    end
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
