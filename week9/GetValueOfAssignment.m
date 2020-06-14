@@ -20,7 +20,7 @@ else
     for i = 1:length(F.var),
         map(i) = find(VO == F.var(i));
     end;
-    indx = AssignmentToIndex(A(map), F.card);
+    indx = AssignmentToIndex(A(:,map), F.card);
 end;
 
 v = F.val(indx);

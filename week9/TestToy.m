@@ -3,24 +3,26 @@
 rand('seed', 1);
 
 % Construct the toy network
-[toy_network, toy_factors] = ConstructToyNetwork(0.3, 1);
+[toy_network, toy_factors] = ConstructToyNetwork(1, 0.2);
 toy_evidence = zeros(1, length(toy_network.names));
 %toy_clique_tree = CreateCliqueTree(toy_factors, []);
 %toy_cluster_graph = CreateClusterGraph(toy_factors,[]);
 
 % Exact Inference
-ExactM = ComputeExactMarginalsBP(toy_factors, toy_evidence, 0)
-figure, VisualizeToyImageMarginals(toy_network, ExactM);
+%ExactM = ComputeExactMarginalsBP(toy_factors, toy_evidence, 0);
+%figure, VisualizeToyImageMarginals(toy_network, ExactM);
 
 % Comment this in to run Approximate Inference on the toy network
 % Approximate Inference
-% % ApproxM = ApproxInference(toy_cluster_graph, toy_factors, toy_evidence);
-% figure, VisualizeToyImageMarginals(toy_network, ApproxM);
+%ApproxM = ApproxInference(toy_cluster_graph, toy_factors, toy_evidence);
+%figure, VisualizeToyImageMarginals(toy_network, ApproxM);
 
 
 
 % MCMC Inference
 transition_names = {'Gibbs', 'MHUniform', 'MHGibbs', 'MHSwendsenWang1', 'MHSwendsenWang2'};
+%
+transition_names = {'MHSwendsenWang2'};
 
 for j = 1:length(transition_names)
     samples_list = {};

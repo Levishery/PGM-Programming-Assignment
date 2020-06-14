@@ -53,7 +53,26 @@ LogBS = zeros(1, d);
 %
 % Also you should have only ONE for-loop, as for-loops are VERY slow in matlab
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+BlanketFactors = G.var2factors(V);
+BlanketFactors = [BlanketFactors{:}];
+BlanketFactors = unique(BlanketFactors);
+BlanketFactors = F(BlanketFactors);
 
+%{
+MarkovBlanket = [V BlanketFactors.var];
+MarkovBlanket = unique(MarkovBlanket);
+MarkovBlanket = MarkovBlanket(length(V)+1:length(MarkovBlanket));
+BlanketAssignment = A(MarkovBlanket);
+BlanketAssignment = repmat(BlanketAssignment,d,1);
+VAssignment = repmat([1:d]',1,length(V));
+Assignment = [VAssignment BlanketAssignment];
+%}
+Assignment = repmat(A,d,1);
+Assignment(:,V) = repmat([1:d]',1,length(V));
+
+for i = 1:length(BlanketFactors)
+    LogBS = LogBS + log(GetValueOfAssignment(BlanketFactors(i), Assignment(:,BlanketFactors(i).var)));
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Re-normalize to prevent underflow when you move back to probability space

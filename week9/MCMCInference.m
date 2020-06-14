@@ -76,14 +76,16 @@ if bSwendsenWang
               % Specify the q_{i,j}'s for Swendsen-Wang for variant 1
               %
               %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+            q_ij = 0.5;
               %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
           elseif strcmp(TransName, 'MHSwendsenWang2')
               %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
               % YOUR CODE HERE 
               % Specify the q_{i,j}'s for Swendsen-Wang for variant 2
-              %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+              %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\
+            uu = [1:min(edge_factor.card)]';
+            same_val = edge_factor.val(AssignmentToIndex([uu uu], edge_factor.card));
+            q_ij = sum(same_val)/sum(edge_factor.val);
               %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
           else
               disp('WARNING: unrecognized Swendsen-Wang name');
@@ -124,8 +126,8 @@ for i = 1:max_iter
     % This is a dummy line added so that submit.m runs without an error
     % even if you have not coded anything.
     % Please delete this line.
-
-    all_samples(i+1, :) = A0; 
+    A = Trans(A, G, F);
+    all_samples(i+1, :) = A; 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end
 
